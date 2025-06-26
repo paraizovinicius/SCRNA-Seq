@@ -1,30 +1,75 @@
-## Semi-supervised Discriminative Analysis Clustering (SDAC)
+## SCRNA-Seq Analysis
 
-**Semi-supervised Discriminative Analysis Clustering (SDAC)** is a machine learning technique that combines the strengths of supervised and unsupervised learning for clustering tasks. Unlike traditional clustering methods that rely solely on unlabeled data, SDAC leverages a small amount of labeled data to guide the clustering process, improving the quality and interpretability of the resulting clusters.
+This repository takes inspiration in Mateus do Amor Tesis [A COMPARISON OF SCRNA-SEQ ANALYSIS WORKFLOWS FOR DIFFERENTIALLY EXPRESSED GENES IDENTIFICATION IN BREAST CANCER], available in Github [brca-scrna-seq](https://github.com/AILAB-CEFET-RJ/brca-scrna-seq/tree/master).
+
+**Semi-supervised Deep Embedded Clustering (SDEC)** 
 
 ### Key Features
 
-- **Semi-supervised Learning:** Utilizes both labeled and unlabeled data to enhance clustering performance.
-- **Discriminative Analysis:** Focuses on maximizing the separation between clusters using discriminative criteria, often inspired by techniques like Linear Discriminant Analysis (LDA).
-- **Improved Cluster Quality:** Incorporates prior knowledge from labeled samples to produce more meaningful and accurate clusters.
-
 ### Typical Workflow
-
-1. **Input Data:** A dataset containing both labeled and unlabeled samples.
-2. **Initialization:** Use labeled data to initialize cluster centers or discriminative directions.
-3. **Iterative Clustering:** Assign unlabeled samples to clusters based on discriminative features, updating cluster assignments iteratively.
-4. **Refinement:** Optionally refine clusters using additional constraints or regularization.
 
 ### Applications
 
-- Image and speech recognition
-- Bioinformatics and genomics
-- Text and document clustering
-- Any domain where labeled data is scarce but unlabeled data is abundant
+
+
+### Steps
+In order to extract information out of scRNA-seq data, the raw data must be preprocessed. We
+create pipelines consisting of four steps: (i) quality control, (ii) normalization, (iii) dimensionality
+reduction, and (iv) cell clustering.
+
+(i) gene filtering, (ii) maximum absolute scaling, (iii) Incremental PCA and
+(iv) K-Means.
+
+Hiperparameters:
+(i) mean = 0, (ii) none, (iii) batch size = 10000, n components = 90% of explained variance and (iv) K = 2.
+
+We use cluster homogeneity (Section II.8.2) and rand index (Section II.8.3) to evaluate clustering
+quality.
+
+## 📊 Overview of Dataset GEO: GSE75688
+
+[GSE75688](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE75688) is a Gene Expression Omnibus (GEO) dataset widely used in genomics research.
+
+### 📁 Dataset Files
+
+#### 1. **GSE75688 GEO processed Breast Cancer raw TPM matrix.txt.gz**
+- **Columns:**
+    - **1-3:** Ensemble ID, gene name, gene type
+    - **4-17:** Bulk RNA-seq values for 14 patients (some patients have multiple columns)
+    - **18-566:** Gene expression levels for 549 single cells
+
+#### 2. **GSE75688 final sample information.txt.gz**
+- **Rows:** 528
+- **Columns:**
+    1. **Cell Identifier:** Format `BCXX_YY` (e.g., `BC01_02` = cell 02 from patient 01)
+    2. **Sample Type:** Single cell or bulk read
+    3. **Label:** Tumor or non-tumor
+    4. **Body System:** Source of the sample
+    5. **Cell Type:** Cell classification
+
+> **Example:**  
+> `BC01_02` — Cell 02 from patient 01
+
+### 🧬 Patient ID and Cancer Type Mapping
+
+Each sample in the dataset is labeled with a patient ID (e.g., `BC01_02` — patient ID: 01). The cancer subtype for each patient is inferred as follows:
+
+| **Patient ID(s)** | **Cancer Subtype**                                   |
+|:------------------|:-----------------------------------------------------|
+| 01, 02            | ER+ (Estrogen Receptor Positive)                     |
+| 03                | ER+ and HER2+ (Double Positive)                      |
+| 04, 05, 06        | HER2+ (Human Epidermal Growth Factor Receptor 2+)    |
+| 07–11             | TNBC (Triple-Negative Breast Cancer)                 |
+
+- **ER+**: Estrogen Receptor Positive  
+- **HER2+**: Human Epidermal Growth Factor Receptor 2 Positive  
+- **TNBC**: Triple-Negative Breast Cancer
+
+
+---
 
 ### References
-
-- [Semi-supervised Discriminative Analysis Clustering: Theory and Applications](https://doi.org/10.1109/TPAMI.2017.2677439)
+- [Semi-supervised deep embedded clustering](https://www.sciencedirect.com/science/article/abs/pii/S0925231218312049?casa_token=ohlOuyvtTu8AAAAA:skBSf2VLFcormWGyNrjlWKkRWiWmnvEn_rPFSORYwJ5eXxGvi-7bQ-_yOwvfev3dMR7k8QGZ43d1)
 - [A Survey on Semi-supervised Clustering](https://arxiv.org/abs/1902.12134)
 - [A Review on SemiSupervised Clustering](https://www.sciencedirect.com/science/article/pii/S0020025523002840?casa_token=o5EoHm6-tE0AAAAA:1B9hIdncoMOJWrPs-ug2M2Z-VT8CKuKNR5W5XZIqx4UdS_gJ7d5r-JnjXynmPwNqkd5_VXZWp9Tz)
 
