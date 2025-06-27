@@ -1,30 +1,26 @@
 ## SCRNA-Seq Analysis
 
-This repository takes inspiration in Mateus do Amor Tesis [A COMPARISON OF SCRNA-SEQ ANALYSIS WORKFLOWS FOR DIFFERENTIALLY EXPRESSED GENES IDENTIFICATION IN BREAST CANCER], available in Github [brca-scrna-seq](https://github.com/AILAB-CEFET-RJ/brca-scrna-seq/tree/master).
+This repository continues another work, available in [brca-scrna-seq](https://github.com/AILAB-CEFET-RJ/brca-scrna-seq/tree/master).
+**Semi-supervised Deep Embedded Clustering (SDEC)**
 
-**Semi-supervised Deep Embedded Clustering (SDEC)** 
+SDEC is a machine learning approach that combines deep learning with clustering, leveraging both labeled and unlabeled data to improve clustering performance.
 
 ### Key Features
 
-### Typical Workflow
+- Integrates representation learning and clustering in a unified framework.
+- Utilizes a small amount of labeled data to guide the clustering process.
+- Learns feature embeddings that are more suitable for clustering tasks.
+- Can handle high-dimensional and complex data, such as gene expression profiles.
 
-### Applications
+### Workflow
 
+1. **Preprocessing:** Normalize and preprocess the input data.
+2. **Representation Learning:** Use a deep neural network (e.g., autoencoder) to learn low-dimensional embeddings.
+3. **Clustering:** Apply clustering in the embedding space.
+4. **Semi-supervised Guidance:** Incorporate labeled data to refine cluster assignments and network parameters.
+5. **Iterative Optimization:** Alternate between updating cluster assignments and network weights until convergence.
+6. **Evaluation**: Evaluate cluster quality with Rand Index and NMI score.
 
-
-### Steps
-In order to extract information out of scRNA-seq data, the raw data must be preprocessed. We
-create pipelines consisting of four steps: (i) quality control, (ii) normalization, (iii) dimensionality
-reduction, and (iv) cell clustering.
-
-(i) gene filtering, (ii) maximum absolute scaling, (iii) Incremental PCA and
-(iv) K-Means.
-
-Hiperparameters:
-(i) mean = 0, (ii) none, (iii) batch size = 10000, n components = 90% of explained variance and (iv) K = 2.
-
-We use cluster homogeneity (Section II.8.2) and rand index (Section II.8.3) to evaluate clustering
-quality.
 
 ## 📊 Overview of Dataset GEO: GSE75688
 
@@ -61,9 +57,6 @@ Each sample in the dataset is labeled with a patient ID (e.g., `BC01_02` — pat
 | 04, 05, 06        | HER2+ (Human Epidermal Growth Factor Receptor 2+)    |
 | 07–11             | TNBC (Triple-Negative Breast Cancer)                 |
 
-- **ER+**: Estrogen Receptor Positive  
-- **HER2+**: Human Epidermal Growth Factor Receptor 2 Positive  
-- **TNBC**: Triple-Negative Breast Cancer
 
 
 ---
