@@ -79,10 +79,22 @@ pip install -r requirements.txt
 
 This will ensure all dependencies needed for the experiment are installed.
 
+## Results
+
+### Comparison with Other Approaches
+
+| Method                | Accuracy | F1     | NMI    | RI     |
+|-----------------------|----------|--------|--------|--------|
+| **SDEC**              | 0.8311   | 0.8518 | 0.3662 | 0.7187 |
+| DEC                   | 0.6990   | 0.7036 | 0.1796 | 0.5784 |
+| Spectral Clustering   | 0.7689   | 0.7792 | 0.2995 | 0.6440 |
+| KMeans (no PCA)       | 0.5884   | 0.7408 | 0.0340 | 0.5147 |
+
+SDEC outperforms other clustering methods across all evaluation metrics, demonstrating the effectiveness of semi-supervised deep embedded clustering for high-dimensional single-cell RNA-seq data.
+
 
 ## References
 - [Semi-supervised deep embedded clustering](https://www.sciencedirect.com/science/article/abs/pii/S0925231218312049?casa_token=ohlOuyvtTu8AAAAA:skBSf2VLFcormWGyNrjlWKkRWiWmnvEn_rPFSORYwJ5eXxGvi-7bQ-_yOwvfev3dMR7k8QGZ43d1)
-- [A Survey on Semi-supervised Clustering](https://arxiv.org/abs/1902.12134)
 - [A Review on SemiSupervised Clustering](https://www.sciencedirect.com/science/article/pii/S0020025523002840?casa_token=o5EoHm6-tE0AAAAA:1B9hIdncoMOJWrPs-ug2M2Z-VT8CKuKNR5W5XZIqx4UdS_gJ7d5r-JnjXynmPwNqkd5_VXZWp9Tz)
 
 ---
