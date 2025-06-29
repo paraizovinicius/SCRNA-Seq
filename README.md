@@ -1,16 +1,11 @@
 ## SCRNA-Seq Analysis
 
 This repository continues another work, available in [brca-scrna-seq](https://github.com/AILAB-CEFET-RJ/brca-scrna-seq/tree/master).
+
+
 **Semi-supervised Deep Embedded Clustering (SDEC)**
 
 SDEC is a machine learning approach that combines deep learning with clustering, leveraging both labeled and unlabeled data to improve clustering performance.
-
-### Key Features
-
-- Integrates representation learning and clustering in a unified framework.
-- Utilizes a small amount of labeled data to guide the clustering process.
-- Learns feature embeddings that are more suitable for clustering tasks.
-- Can handle high-dimensional and complex data, such as gene expression profiles.
 
 ### Workflow
 
