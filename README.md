@@ -61,7 +61,26 @@ Each sample in the dataset is labeled with a patient ID (e.g., `BC01_02` — pat
 
 ---
 
-### References
+## Instalation
+
+You'll need Python version **3.12.7**.  
+To set up the environment, create a new Conda environment with the required Python version:
+
+```bash
+conda create -n sdac-env python=3.12.7
+conda activate sdac-env
+```
+
+Next, install the required Python packages by running:
+
+```bash
+pip install -r requirements.txt
+```
+
+This will ensure all dependencies needed for the experiment are installed.
+
+
+## References
 - [Semi-supervised deep embedded clustering](https://www.sciencedirect.com/science/article/abs/pii/S0925231218312049?casa_token=ohlOuyvtTu8AAAAA:skBSf2VLFcormWGyNrjlWKkRWiWmnvEn_rPFSORYwJ5eXxGvi-7bQ-_yOwvfev3dMR7k8QGZ43d1)
 - [A Survey on Semi-supervised Clustering](https://arxiv.org/abs/1902.12134)
 - [A Review on SemiSupervised Clustering](https://www.sciencedirect.com/science/article/pii/S0020025523002840?casa_token=o5EoHm6-tE0AAAAA:1B9hIdncoMOJWrPs-ug2M2Z-VT8CKuKNR5W5XZIqx4UdS_gJ7d5r-JnjXynmPwNqkd5_VXZWp9Tz)
