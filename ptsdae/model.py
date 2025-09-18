@@ -25,6 +25,8 @@ def train(
     update_callback: Optional[Callable[[float, float], None]] = None,
     num_workers: Optional[int] = None,
     epoch_callback: Optional[Callable[[int, torch.nn.Module], None]] = None,
+    layer: Optional[int] = None,
+
 ) -> None:
     """
     Function to train an autoencoder using the provided dataset. If the dataset consists of 2-tuples or lists of
@@ -85,7 +87,9 @@ def train(
                      "vls": "%.4f" % -1, 
                      "xbar": "%.4f" % -1, 
                      "std": "%.4f" % -1,
-                     "lr": current_lr},
+                     "lr": current_lr,
+                     "layer": layer},
+                     
             disable=silent,
         )
         for index, batch in enumerate(data_iterator):
@@ -121,7 +125,8 @@ def train(
                 vls="%.4f" % validation_loss_value, 
                 xbar="%.4f" % validation_mean,
                 std="%.4f" % validation_std,
-                lr=current_lr
+                lr=current_lr,
+                layer=layer,
                 
             )
         if update_freq is not None and epoch % update_freq == 0:
@@ -152,6 +157,7 @@ def train(
                 validation_loss = loss_function(validation_output, validation_actual)
                 # validation_accuracy = pretrain_accuracy(validation_output, validation_actual)
                 validation_loss_value = float(validation_loss.item())
+                
                 if scheduler is not None and validation_loss_value != -1:
                     scheduler.step(validation_loss_value)
                     current_lr = optimizer.param_groups[0]["lr"]
@@ -174,7 +180,8 @@ def train(
                     vls="%.4f" % validation_loss_value,
                     xbar="%.4f" % validation_mean,
                     std="%.4f" % validation_std,
-                    lr=current_lr
+                    lr=current_lr,
+                    layer=layer,
                 )
             if update_callback is not None:
                 update_callback(
@@ -267,6 +274,7 @@ def pretrain(
             update_callback=update_callback,
             num_workers=num_workers,
             epoch_callback=epoch_callback,
+            layer=index,
         )
         # copy the weights
         sub_autoencoder.copy_weights(encoder, decoder)

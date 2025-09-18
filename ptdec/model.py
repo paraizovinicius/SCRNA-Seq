@@ -72,7 +72,7 @@ def train(
         },
         disable=silent,
     )
-    kmeans = KMeans(n_clusters=model.cluster_number, n_init=20)
+    kmeans = KMeans(n_clusters=model.cluster_number, n_init=20, random_state=42)
     model.train()
     features = []
     actual = []
@@ -121,9 +121,9 @@ def train(
             if cuda:
                 batch = batch.cuda(non_blocking=True)
             
-            a = compute_pairwise_constraints(label)
+            a = compute_pairwise_constraints(label) # restrições par a par
             
-                
+            
             ## ---------------------------------------------------------------##    
             output = model(batch)
             target = target_distribution(output).detach()
