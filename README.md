@@ -80,8 +80,8 @@ This will ensure all dependencies needed for the experiment are installed.
 
 | Method                | Accuracy | F1     | NMI    | RI     |
 |-----------------------|----------|--------|--------|--------|
-| **SDEC**              | 0.8311   | 0.8518 | 0.3662 | 0.7187 |
-| DEC                   | 0.6990   | 0.7036 | 0.1796 | 0.5784 |
+| **SDEC**              | 0.9670   | 0.9584 | 0.8009 | 0.9360 |
+| DEC                   | 0.9301   | 0.9000 | 0.6834 | 0.8697 |
 | Spectral Clustering   | 0.7689   | 0.7792 | 0.2995 | 0.6440 |
 | KMeans (no PCA)       | 0.5884   | 0.7408 | 0.0340 | 0.5147 |
 
