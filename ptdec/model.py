@@ -96,7 +96,7 @@ def train(
     with torch.no_grad():
         # initialise the cluster centers
         model.state_dict()["assignment.cluster_centers"].copy_(cluster_centers)
-    loss_function = nn.KLDivLoss(reduction='sum')
+    loss_function = nn.KLDivLoss(reduction='sum') # batchmean
     delta_label = None
     for epoch in range(epochs):
         features = []
@@ -127,7 +127,7 @@ def train(
             ## ---------------------------------------------------------------##    
             output = model(batch)
             target = target_distribution(output).detach()
-            z = model.encoder(batch).detach().cpu()
+            z = model.encoder(batch)   # keep gradient flow
             loss = (loss_function(output.log(), target) / output.shape[0]) + supervised_loss(z,a,lambd)
             ## ---------------------------------------------------------------##    
             
