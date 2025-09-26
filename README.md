@@ -4,7 +4,7 @@ This repository continues another work, available in [brca-scrna-seq](https://gi
 
 **Objectives**
 
-The primary objective of this work is to compare the performance of four clustering algorithms—KMeans, Spectral Clustering, Deep Embedded Clustering (DEC), and Semi-supervised Deep Embedded Clustering (SDEC)—in predicting whether a patient sample is cancerous or non-cancerous. The DEC algorithm is implemented using a non-official PyTorch repository, available at [vlukiyanov/pt-dec](https://github.com/vlukiyanov/pt-dec/tree/master/ptdec).
+The primary objective of this work is to compare the performance of four clustering algorithms—KMeans, Spectral Clustering, Deep Embedded Clustering (DEC), and Semi-supervised Deep Embedded Clustering (SDEC)—in predicting whether a patient sample is cancerous or non-cancerous. The DEC algorithm is implemented using a non-official PyTorch repository, available at [vlukiyanov/pt-dec](https://github.com/vlukiyanov/pt-dec/tree/master).
 
 
 **Semi-supervised Deep Embedded Clustering (SDEC)**
