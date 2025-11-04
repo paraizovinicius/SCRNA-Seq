@@ -3,6 +3,13 @@ import torch.nn as nn
 from torch.nn import Parameter
 import torch.nn.functional as F
 from typing import Optional
+from ptdec.utils import set_random_seeds
+
+# Set a default seed for deterministic initialisation of layer weights in this module.
+# Change or set to None to disable automatic reseeding here.
+DEFAULT_SEED = 42
+if DEFAULT_SEED is not None:
+    set_random_seeds(DEFAULT_SEED)
 
 
 class DenoisingAutoencoder(nn.Module):
@@ -67,7 +74,7 @@ class DenoisingAutoencoder(nn.Module):
         :return: None
         """
         if weight is not None:
-            nn.init.xavier_uniform_(weight, gain)
+                nn.init.xavier_uniform_(weight, gain)
         nn.init.constant_(bias, 0)
 
     def copy_weights(self, encoder: torch.nn.Linear, decoder: torch.nn.Linear) -> None:

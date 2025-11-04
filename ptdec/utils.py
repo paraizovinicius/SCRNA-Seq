@@ -1,7 +1,38 @@
 import numpy as np
+import random
 import torch
 from typing import Optional
 from scipy.optimize import linear_sum_assignment
+
+
+def set_random_seeds(seed: int = 42) -> None:
+    """
+    Set global random seeds for reproducible runs across numpy, python random and PyTorch.
+
+    This configures CPU and CUDA RNGs and attempts to make cuDNN deterministic.
+
+    :param seed: integer seed to use
+    :return: None
+    """
+    if seed is None:
+        return
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.manual_seed(seed)
+    # for multi-gpu
+    try:
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+    except Exception:
+        # CUDA may not be available; ignore
+        pass
+
+    # Make cuDNN deterministic where possible. This may slow down training.
+    try:
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+    except Exception:
+        pass
 
 
 def cluster_accuracy(y_true, y_predicted, cluster_number: Optional[int] = None):

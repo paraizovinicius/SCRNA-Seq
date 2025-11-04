@@ -6,6 +6,7 @@ from torch.utils.data.dataloader import DataLoader, default_collate
 from typing import Tuple, Callable, Optional, Union
 from tqdm import tqdm
 
+
 from ptdec.utils import target_distribution, cluster_accuracy, compute_pairwise_constraints, supervised_loss
 
 
@@ -51,14 +52,14 @@ def train(
         collate_fn=collate_fn,
         pin_memory=False,
         sampler=sampler,
-        shuffle=False,
+        shuffle=(False if sampler is not None else True),
     )
     train_dataloader = DataLoader(
         dataset,
         batch_size=batch_size,
         collate_fn=collate_fn,
         sampler=sampler,
-        shuffle=True,
+        shuffle=(False if sampler is not None else True),
     )
     data_iterator = tqdm(
         static_dataloader,

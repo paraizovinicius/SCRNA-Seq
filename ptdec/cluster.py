@@ -11,6 +11,7 @@ class ClusterAssignment(nn.Module):
         embedding_dimension: int, # hidden layer dim
         alpha: float = 1.0,
         cluster_centers: Optional[torch.Tensor] = None,
+        random_seed: Optional[int] = None,
     ) -> None:
         
         """
@@ -21,7 +22,8 @@ class ClusterAssignment(nn.Module):
         :param cluster_number: number of clusters
         :param embedding_dimension: embedding dimension of feature vectors
         :param alpha: parameter representing the degrees of freedom in the t-distribution, default 1.0
-        :param cluster_centers: clusters centers to initialise, if None then use Xavier uniform
+        :param cluster_centers: clusters centres to initialise, if None then use Xavier uniform
+        :param random_seed: random seed for reproducible cluster center initialization, default None
         """
         super(ClusterAssignment, self).__init__()
         self.embedding_dimension = embedding_dimension
@@ -31,6 +33,9 @@ class ClusterAssignment(nn.Module):
             initial_cluster_centers = torch.zeros(
                 self.cluster_number, self.embedding_dimension, dtype=torch.float
             )
+            # Set random seed for reproducible results if provided
+            if random_seed is not None:
+                torch.manual_seed(random_seed)
             nn.init.xavier_uniform_(initial_cluster_centers)
         else:
             initial_cluster_centers = cluster_centers

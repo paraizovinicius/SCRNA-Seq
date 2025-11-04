@@ -11,6 +11,7 @@ class DEC(nn.Module):
         hidden_dimension: int,
         encoder: torch.nn.Module,
         alpha: float = 1.0,
+        random_seed: int = 42,
     ):
         """
         Module which holds all the moving parts of the DEC algorithm, as described in
@@ -28,7 +29,7 @@ class DEC(nn.Module):
         self.cluster_number = cluster_number
         self.alpha = alpha # default
         self.assignment = ClusterAssignment(
-            cluster_number, self.hidden_dimension, alpha
+            cluster_number, self.hidden_dimension, alpha, random_seed=random_seed
         )
 
     def forward(self, batch: torch.Tensor) -> torch.Tensor:

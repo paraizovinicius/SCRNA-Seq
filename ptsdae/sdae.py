@@ -3,6 +3,14 @@ from cytoolz.itertoolz import concat, sliding_window
 from typing import Callable, Iterable, Optional, Tuple, List
 import torch
 import torch.nn as nn
+from ptdec.utils import set_random_seeds
+
+# Set a default seed for deterministic initialisation of layer weights in this module.
+# Change or set to None to disable automatic reseeding here.
+DEFAULT_SEED = 42
+if DEFAULT_SEED is not None:
+    # Seed once at module import so different layers receive different random draws
+    set_random_seeds(DEFAULT_SEED)
 
 
 def build_units(
