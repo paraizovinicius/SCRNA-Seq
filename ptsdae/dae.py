@@ -3,14 +3,6 @@ import torch.nn as nn
 from torch.nn import Parameter
 import torch.nn.functional as F
 from typing import Optional
-from ptdec.utils import set_random_seeds
-
-# Set a default seed for deterministic initialisation of layer weights in this module.
-# Change or set to None to disable automatic reseeding here.
-DEFAULT_SEED = 42
-if DEFAULT_SEED is not None:
-    set_random_seeds(DEFAULT_SEED)
-
 
 class DenoisingAutoencoder(nn.Module):
     def __init__(
@@ -38,14 +30,14 @@ class DenoisingAutoencoder(nn.Module):
         self.activation = activation
         self.gain = gain
         self.corruption = corruption
-        
+
         # encoder parameters
         self.encoder_weight = Parameter(
             torch.Tensor(hidden_dimension, embedding_dimension)
         )
         self.encoder_bias = Parameter(torch.Tensor(hidden_dimension))
         self._initialise_weight_bias(self.encoder_weight, self.encoder_bias, self.gain)
-        
+
         # decoder parameters
         self._decoder_weight = (
             Parameter(torch.Tensor(embedding_dimension, hidden_dimension))

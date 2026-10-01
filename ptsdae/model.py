@@ -4,12 +4,58 @@ import torch.nn.functional as F
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 from tqdm import tqdm
+from .sdae import StackedDenoisingAutoEncoder
+from .dae import DenoisingAutoencoder
 
-from ptsdae.dae import DenoisingAutoencoder
-from ptsdae.sdae import StackedDenoisingAutoEncoder
+def predict_ae(
+    dataset: torch.utils.data.Dataset,
+    model: torch.nn.Module,
+    batch_size: int,
+    cuda: bool = True,
+    silent: bool = False,
+    encode: bool = True,
+) -> torch.Tensor:
+    """
+    Given a dataset, run the model in evaluation mode with the inputs in batches and concatenate the
+    output.
+
+    :param dataset: evaluation Dataset
+    :param model: autoencoder for prediction
+    :param batch_size: batch size
+    :param cuda: whether CUDA is used, defaults to True
+    :param silent: set to True to prevent printing out summary statistics, defaults to False
+    :param encode: whether to encode or use the full autoencoder
+    :return: predicted features from the Dataset
+    """
+    dataloader = DataLoader(
+        dataset, batch_size=batch_size, pin_memory=False, shuffle=False
+    )
+    data_iterator = tqdm(dataloader, leave=False, unit="batch", disable=silent,)
+    features = []
+    if isinstance(model, torch.nn.Module):
+        model.eval()
+    for batch in data_iterator:
+        if isinstance(batch, tuple) or isinstance(batch, list) and len(batch) in [1, 2]:
+            batch = batch[0]
+        else:
+            raise ValueError(f"Unexpected batch format (predict): {type(batch)} with length {len(batch)}")
 
 
-def train(
+
+        if cuda:
+            batch = batch.cuda(non_blocking=True)
+        batch = batch.squeeze(1).view(batch.size(0), -1)
+        if encode:
+            output = model.encode(batch)
+        else:
+            output = model(batch)
+        features.append(
+            output.detach().cpu()
+        )  # move to the CPU to prevent out of memory on the GPU
+    return torch.cat(features)
+
+
+def train_ae(
     dataset: torch.utils.data.Dataset,
     autoencoder: torch.nn.Module,
     epochs: int,
@@ -74,22 +120,22 @@ def train(
     validation_std = -1
     current_lr = optimizer.param_groups[0]["lr"]
     loss_value = 0
-    
+
     for epoch in range(epochs):
-                   
-        
+
+
         data_iterator = tqdm(
             dataloader,
             leave=True,
             unit="batch",
-            postfix={"epo": epoch, 
-                     "lss": "%.4f" % 0.0, 
-                     "vls": "%.4f" % -1, 
-                     "xbar": "%.4f" % -1, 
+            postfix={"epo": epoch,
+                     "lss": "%.4f" % 0.0,
+                     "vls": "%.4f" % -1,
+                     "xbar": "%.4f" % -1,
                      "std": "%.4f" % -1,
                      "lr": current_lr,
                      "layer": layer},
-                     
+
             disable=silent,
         )
         for index, batch in enumerate(data_iterator):
@@ -101,37 +147,37 @@ def train(
                 batch = batch[0]
             else:
                 raise ValueError(f"Unexpected batch format: {type(batch)} with length {len(batch)}")
-            
+
             if cuda:
                 batch = batch.cuda(non_blocking=True)
             # run the batch through the autoencoder and obtain the output
             if corruption is not None:
-                output = autoencoder(F.dropout(batch, corruption)) # 20% of the elements in the batch are randomly zeroed 
+                output = autoencoder(F.dropout(batch, corruption)) # 20% of the elements in the batch are randomly zeroed
             else:
                 output = autoencoder(batch)
-                
+
             loss = loss_function(output, batch)
             # accuracy = pretrain_accuracy(output, batch)
             loss_value = float(loss.item())
             optimizer.zero_grad()
             loss.backward()
             optimizer.step(closure=None)
-            
-            
-            
+
+
+
             data_iterator.set_postfix(
-                epo=epoch, 
-                lss="%.4f" % loss_value, 
-                vls="%.4f" % validation_loss_value, 
+                epo=epoch,
+                lss="%.4f" % loss_value,
+                vls="%.4f" % validation_loss_value,
                 xbar="%.4f" % validation_mean,
                 std="%.4f" % validation_std,
                 lr=current_lr,
                 layer=layer,
-                
+
             )
         if update_freq is not None and epoch % update_freq == 0:
             if validation_loader is not None:
-                validation_output = predict( # here, we don't apply corruption
+                validation_output = predict_ae( # here, we don't apply corruption
                     validation,
                     autoencoder,
                     batch_size,
@@ -141,7 +187,7 @@ def train(
                 )
                 validation_mean = torch.mean(validation_output)
                 validation_std = torch.std(validation_output)
-                
+
                 validation_inputs = []
                 for val_batch in validation_loader:
                     if (
@@ -157,11 +203,11 @@ def train(
                 validation_loss = loss_function(validation_output, validation_actual)
                 # validation_accuracy = pretrain_accuracy(validation_output, validation_actual)
                 validation_loss_value = float(validation_loss.item())
-                
+
                 if scheduler is not None and validation_loss_value != -1:
                     scheduler.step(validation_loss_value)
                     current_lr = optimizer.param_groups[0]["lr"]
-                           
+
                 data_iterator.set_postfix(
                     epo=epoch,
                     lss="%.4f" % loss_value,
@@ -196,7 +242,8 @@ def train(
             autoencoder.train()
 
 
-def pretrain(
+
+def pretrain_ae(
     dataset,
     autoencoder: StackedDenoisingAutoEncoder,
     epochs: int,
@@ -258,7 +305,7 @@ def pretrain(
             sub_autoencoder = sub_autoencoder.cuda()
         ae_optimizer = optimizer(sub_autoencoder)
         ae_scheduler = scheduler(ae_optimizer) if scheduler is not None else scheduler
-        train(
+        train_ae(
             current_dataset,
             sub_autoencoder,
             epochs,
@@ -281,7 +328,7 @@ def pretrain(
         # pass the dataset through the encoder part of the subautoencoder
         if index != (number_of_subautoencoders - 1):
             current_dataset = TensorDataset(
-                predict(
+                predict_ae(
                     current_dataset,
                     sub_autoencoder,
                     batch_size,
@@ -291,7 +338,7 @@ def pretrain(
             )
             if current_validation is not None:
                 current_validation = TensorDataset(
-                    predict(
+                    predict_ae(
                         current_validation,
                         sub_autoencoder,
                         batch_size,
@@ -302,51 +349,3 @@ def pretrain(
         else:
             current_dataset = None  # minor optimisation on the last subautoencoder
             current_validation = None
-
-
-def predict(
-    dataset: torch.utils.data.Dataset,
-    model: torch.nn.Module,
-    batch_size: int,
-    cuda: bool = True,
-    silent: bool = False,
-    encode: bool = True,
-) -> torch.Tensor:
-    """
-    Given a dataset, run the model in evaluation mode with the inputs in batches and concatenate the
-    output.
-
-    :param dataset: evaluation Dataset
-    :param model: autoencoder for prediction
-    :param batch_size: batch size
-    :param cuda: whether CUDA is used, defaults to True
-    :param silent: set to True to prevent printing out summary statistics, defaults to False
-    :param encode: whether to encode or use the full autoencoder
-    :return: predicted features from the Dataset
-    """
-    dataloader = DataLoader(
-        dataset, batch_size=batch_size, pin_memory=False, shuffle=False
-    )
-    data_iterator = tqdm(dataloader, leave=False, unit="batch", disable=silent,)
-    features = []
-    if isinstance(model, torch.nn.Module):
-        model.eval()
-    for batch in data_iterator:
-        if isinstance(batch, tuple) or isinstance(batch, list) and len(batch) in [1, 2]:
-            batch = batch[0]
-        else:
-            raise ValueError(f"Unexpected batch format (predict): {type(batch)} with length {len(batch)}")
-        
-        
-        
-        if cuda:
-            batch = batch.cuda(non_blocking=True)
-        batch = batch.squeeze(1).view(batch.size(0), -1)
-        if encode:
-            output = model.encode(batch)
-        else:
-            output = model(batch)
-        features.append(
-            output.detach().cpu()
-        )  # move to the CPU to prevent out of memory on the GPU
-    return torch.cat(features)

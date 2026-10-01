@@ -3,15 +3,8 @@ from cytoolz.itertoolz import concat, sliding_window
 from typing import Callable, Iterable, Optional, Tuple, List
 import torch
 import torch.nn as nn
-from ptdec.utils import set_random_seeds
 
-# Set a default seed for deterministic initialisation of layer weights in this module.
-# Change or set to None to disable automatic reseeding here.
 DEFAULT_SEED = 42
-if DEFAULT_SEED is not None:
-    # Seed once at module import so different layers receive different random draws
-    set_random_seeds(DEFAULT_SEED)
-
 
 def build_units(
     dimensions: Iterable[int], activation: Optional[torch.nn.Module]
@@ -79,23 +72,23 @@ class StackedDenoisingAutoEncoder(nn.Module):
         self.dimensions = dimensions
         self.embedding_dimension = dimensions[0]
         self.hidden_dimension = dimensions[-1]
-        
-        
+
+
         # construct the encoder
         encoder_units = build_units(self.dimensions[:-1], activation) # includes all elements except the last one.
         encoder_units.extend(
             build_units([self.dimensions[-2], self.dimensions[-1]], None)
         )
         self.encoder = nn.Sequential(*encoder_units)
-        
-        
+
+
         # construct the decoder
         decoder_units = build_units(reversed(self.dimensions[1:]), activation)
         decoder_units.extend(
             build_units([self.dimensions[1], self.dimensions[0]], final_activation)
         )
-        
-        
+
+
         self.decoder = nn.Sequential(*decoder_units)
         # initialise the weights and biases in the layers
         for layer in concat([self.encoder, self.decoder]):
