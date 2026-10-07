@@ -84,10 +84,11 @@ This will ensure all dependencies needed for the experiment are installed.
 
 | Method                | Accuracy | F1     | NMI    | RI     |
 |-----------------------|----------|--------|--------|--------|
-| **SDEC**              | 0.9748   | 0.9677 | 0.8305 | 0.9507 |
-| DEC                   | 0.7223   | 0.6227 | 0.1248 | 0.5981 |
-| Spectral Clustering   | 0.7689   | 0.7792 | 0.2995 | 0.6440 |
-| KMeans (no PCA)       | 0.5884   | 0.7408 | 0.0340 | 0.5147 |
+| **SDEC**              | 0.9417   | 0.9231 | 0.6696 | 0.8901 |
+| IDEC (with scaler)    | 0.9301   | 0.9100 | 0.6241 | 0.8697 |
+| DEC (with scaler)                | 0.9262   | 0.9036 | 0.6077 | 0.8631 |
+| Spectral Clustering (w/o PCA)   | 0.6544   | 0.1835 | 0.0925 | 0.5468 |
+| KMeans (no PCA no scaler)       | 0.9048   | 0.8733 | 0.5323 | 0.8274 |
 
 SDEC outperforms other clustering methods across all evaluation metrics, demonstrating the effectiveness of semi-supervised deep embedded clustering for high-dimensional single-cell RNA-seq data.
 
