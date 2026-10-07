@@ -27,11 +27,15 @@ def cluster_acc(Y_pred, Y):
   return sum(w[i, j] for i, j in zip(row_ind, col_ind)) / Y_pred.size
 
 
-class DEC(nn.Module):
-    def __init__(self, encoder, init_centroids, alpha=1.0):
+import torch
+import torch.nn as nn
+
+class IDEC(nn.Module):
+    def __init__(self, encoder, decoder, init_centroids, alpha=1.0):
         super().__init__()
 
         self.encoder = encoder
+        self.decoder = decoder # Now the decoder is added and will be finetuned
         self.alpha = alpha
 
         self.centroids = nn.Parameter(

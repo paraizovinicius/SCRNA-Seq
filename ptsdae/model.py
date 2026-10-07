@@ -204,7 +204,8 @@ def train_ae(
                 # validation_accuracy = pretrain_accuracy(validation_output, validation_actual)
                 validation_loss_value = float(validation_loss.item())
 
-                if scheduler is not None and validation_loss_value != -1:
+                # Only ReduceLROnPlateau takes the loss; other schedulers (e.g. StepLR) step once per epoch below
+                if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
                     scheduler.step(validation_loss_value)
                     current_lr = optimizer.param_groups[0]["lr"]
 
@@ -236,6 +237,9 @@ def train_ae(
                     loss_value,
                     validation_loss_value,
                 )
+        if scheduler is not None and not isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
+            scheduler.step()
+            current_lr = optimizer.param_groups[0]["lr"]
         if epoch_callback is not None:
             autoencoder.eval()
             epoch_callback(epoch, autoencoder)

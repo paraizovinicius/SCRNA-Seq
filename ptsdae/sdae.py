@@ -1,10 +1,26 @@
 from collections import OrderedDict
 from cytoolz.itertoolz import concat, sliding_window
 from typing import Callable, Iterable, Optional, Tuple, List
+import random
+import numpy as np
 import torch
 import torch.nn as nn
 
 DEFAULT_SEED = 42
+
+
+def set_seed(seed: int) -> None:
+    """
+    Seed every random number generator used during autoencoder training: weight initialisation,
+    dropout corruption masks and DataLoader shuffling all draw from these global generators.
+
+    :param seed: seed value
+    :return: None
+    """
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+
 
 def build_units(
     dimensions: Iterable[int], activation: Optional[torch.nn.Module]
@@ -55,6 +71,7 @@ class StackedDenoisingAutoEncoder(nn.Module):
             [torch.Tensor, torch.Tensor, float], None
         ] = default_initialise_weight_bias_,
         gain: float = nn.init.calculate_gain("relu"),
+        seed: Optional[int] = DEFAULT_SEED,
     ):
         """
         Autoencoder composed of a symmetric decoder and encoder components accessible via the encoder and decoder
@@ -67,8 +84,13 @@ class StackedDenoisingAutoEncoder(nn.Module):
         :param final_activation: final activation layer to use, set to None to disable, default torch.nn.ReLU
         :param weight_init: function for initialising weight and bias via mutation, defaults to default_initialise_weight_bias_
         :param gain: gain parameter to pass to weight_init
+        :param seed: seed for all random generators, set to None to disable, default DEFAULT_SEED.
+            The generators are global, so this also fixes the randomness of the pretraining and
+            training that follow, as long as they run right after the autoencoder is created.
         """
         super(StackedDenoisingAutoEncoder, self).__init__() # super(Child, self).__init__()
+        if seed is not None:
+            set_seed(seed)
         self.dimensions = dimensions
         self.embedding_dimension = dimensions[0]
         self.hidden_dimension = dimensions[-1]
